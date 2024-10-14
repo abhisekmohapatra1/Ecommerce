@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Out</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        body{
+            background-color: rgba(255, 228, 196, 0.727);
+        }
+        input {
+            width: 50%;
+        }
+
+        td,
+        th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+    </style>
+</head>
+<nav class="navbar navbar-expand-lg bg-warning">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">EZ Cart</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-link active" aria-current="page" href="{%url 'signout' %}">Logout</a>
+            </div>
+            <div class="navbar-nav">
+                <a class="nav-link active" aria-current="page" href="{%url 'dashboard' %}">Dashboard</a>
+            </div>
+            <div class="navbar-nav">
+                <a class="nav-link active" aria-current="page" href="{%url 'Home' %}">Home</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+<body>
+    {% if cart_items %}
+    {% load django_template_maths %}
+    <table>
+        <tr>
+            <th>Product image</th>
+            <th>Product Name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total Price</th>
+            <th>Action</th>
+        </tr>
+        {% for x in cart_items %}
+        <tr>
+            <form action={% url 'BuyNow' x.id %} method="POST">
+                {% csrf_token %}
+                <td><img src="{{x.product.image.url}}" height="50" width="50" alt="{{x.product.name}}"></td>
+                <td>{{x.product}}</td>
+                <td><input type="text" readonly value="{{x.product.price}}" name="price" class="price"></td>
+                <td>
+                    <input type="button" onclick="quantity_decrement(this); update_totalprice(this)" value="-">
+                    <input type='number' readonly class='quantity' min=1 name="Quantity" oninput="update_totalprice(this)"
+                        value="{{x.quantity}}">
+                    <input type="button" onclick="quantity_increment(this); update_totalprice(this)" value="+">
+                </td>
+                <td> <input type="text" readonly value="{{x.product.price|mul:x.quantity}}" name="total_price"
+                        class="total_price"></td>
+                <td><button class="btn btn danger"><a href="{% url 'RemoveItem' x.id %}">Remove </a></button>
+                    <input type="submit" value="Buy Now">
+                </td>
+            </form>
+        </tr>
+        {% endfor %}
+        <tr>
+            <!-- <td colspan="3">Cart Amount : Rs.{{amount}}</td> -->
+            <!-- <td colspan="3"><button><a href="{% url 'BuyAll' %}"> Buy All</a></button></td> -->
+        </tr>
+    </table>
+
+
+
+    <script>
+        function quantity_decrement(element) {
+            var row = element.closest('tr');
+            QuantityInput = row.querySelector('.quantity')
+            Quantity = parseInt(QuantityInput.value)
+
+            console.log(Quantity)
+            if (Quantity > 1) {
+                QuantityInput.value = Quantity - 1
+            }
+        }
+
+        function quantity_increment(element) {
+            var row = element.closest('tr')
+            QuantityInput = row.querySelector('.quantity')
+            Quantity = parseInt(QuantityInput.value)
+            QuantityInput.value = Quantity + 1
+        }
+
+        function update_totalprice(element) {
+            var row = element.closest('tr')
+            totalamount = row.querySelector('.total_price')
+            price = parseInt(row.querySelector('.price').value)
+            Quantity = parseInt(row.querySelector('.quantity').value)
+            totalamount.value = price * Quantity
+        }
+    </script>
+
+{% else %}
+<p><h3>There is no items in your Cart</h3></p>
+{% endif %}
+</body>
+
+</html>

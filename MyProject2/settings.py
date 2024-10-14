@@ -153,7 +153,7 @@ SESSION_ENGINE ='django.contrib.sessions.backends.db'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'abhisek0099977@gmail.com'
-EMAIL_HOST_PASSWORD = 'kunvrzazjffulosu'
+EMAIL_HOST_PASSWORD = 'your app passkey'
 EMAIL_PORT = 587
 
 
